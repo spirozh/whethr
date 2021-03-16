@@ -3,10 +3,11 @@ from flask import Flask, render_template, redirect, flash, request
 from pyowm import OWM
 from ipstack import GeoLookup
 
-from .config import *
+from . import config
 
 # Define the WSGI application object
 app = Flask(__name__)
+app.config.from_object(config)
 
 # get the location from a query parameter (should be: "<lat>,<lon>")
 def loc_from_query(lat, lon):
@@ -14,7 +15,7 @@ def loc_from_query(lat, lon):
 
 # get the location related to an ip address
 def loc_from_ip(ip):
-    geo = GeoLookup(IPSTACK_KEY)
+    geo = GeoLookup(app.config['IPSTACK_KEY'])
     loc = geo.get_location(ip)
     return loc['latitude'], loc['longitude']
 
@@ -24,7 +25,7 @@ def ensure_valid_loc(loc):
     if lat is None:
         lat = 33.9383776
     if lon is None:
-        lon = -118.3111258)
+        lon = -118.3111258
 
     return (lat, lon)
 
@@ -32,7 +33,7 @@ def ensure_valid_loc(loc):
 def weather_for_loc(loc):
     lat, lon = loc
 
-    mgr = OWM(OWM_KEY).weather_manager()
+    mgr = OWM(app.config['OWM_KEY']).weather_manager()
     observation = mgr.weather_at_coords(lat, lon)
 
     return observation.weather
