@@ -1,1 +1,88 @@
-# whethr
+* requirements 
+
+Initial requirements statement:
+
+Write a python/javascript/html script that gets the weather (from a remote api of your choice)
+and prints the average temperature or does something cool with that data)
+
+* decisions:
+
+remote weather api:
+- OpenWeatherMap (www.openweathermap.org), use PyOWM
+
+something cool:
+1: tell the user whether they should wear a hat tomorrow
+2: ? notify the user by email (or browser push?) if the recommendation changes 
+
+in order to get location from the browser, the site needs to have
+https enabled. in order to have https enabled, an ssl cert is needed,
+in order to get an ssl cert, a domain is needed.
+
+* software stack:
+
+nginx
+flask
+
+* URL paths and functions
+
+** / (root)
+- [X] the root path forwards to /i_should_wear_a_hat
+
+** /i_should_wear_a_hat
+- [X] no 'where' parameter
+  use the location associated with the remote_addr from the request.
+  if there is no location, use my house as the location (python)
+- [X] say to wear a hat or not
+  says to wear a hat if its cold outside at the location (python)
+- [ ] user location
+  user sets the 'where' parameter on the page as city name, form
+  resends the request with the specified location (html form)
+- [ ] browser location
+  if there was no 'where' parameter and the browser will give the
+  location, use AJAX to resend the request with the 'where'
+  parameter, requesting json instead of html and inserting the result
+  into the DOM (javascript)
+- [ ] ? user subscribe
+  subscribe to an email that tells you every day to wear a hat or
+  not (html form)
+
+** ? /subscribe
+- [ ] generate and save confirmation token into confirm db
+- [ ] send confirmation email
+
+** ? /confirm
+- [ ] confirm confirmation token
+- [ ] save email address into email db
+
+** ? /unsubscribe
+- [ ] removes address from the 'email' parameter from email db
+
+
+* tasks
+
+** DONE setup ssl [3/3]
+- [X] hosting on digitalocean
+- [X] whethr.info domain
+- [X] whethr.info ssl cert
+** TODO get location [2/3]
+- [X] check ip address first (set lat,lon)
+- [ ] user - enter the location (convert city to lat,lon)
+- [X] browser - request location (as lat,lon)
+** TODO read weather info for now
+- [X]  asd
+** TODO decide on a hat or not
+- [X] if it is <60F or raining or snowing, wear a hat
+** TODO show it [0/3]
+- [ ] location form
+- [ ] client-side location
+- [ ] make it pretty
+- [ ] ? email subscription form
+** TODO email [0/4]
+- [ ] subscription database
+- [ ] confirmation email
+- [ ] schedule email delivery
+- [ ] look up the weather and send email
+** TODO Docker
+- [ ] base docker image with nginx and wsgi
+- [ ] docker image with app
+- [ ] deploy docker image
