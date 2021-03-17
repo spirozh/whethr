@@ -16,6 +16,10 @@ def loc_from_strings(lat, lon):
     """
     return float(lat), float(lon)
 
+ip_api_url = f"http://api.ipstack.com/%s?access_key={config.IPSTACK_KEY}"
+li_api_search = f"https://us1.locationiq.com/v1/search.php?key={config.LOCATIONIQ_KEY}&q=%s&format=json"
+li_api_reverse = f"https://us1.locationiq.com/v1/reverse.php?key={config.LOCATIONIQ_KEY}&lat=%s&lon=%s&zoom=14&format=json"
+owm_api_weather = f"https://api.openweathermap.org/data/2.5/weather?appid={config.OWM_KEY}&lat=%s&lon=%s&units=imperial"
 
 def loc_from_ip(ip):
     """Convert an IP address to a tuple containing latitude and
@@ -30,12 +34,6 @@ def loc_from_ip(ip):
         return loc['latitude'], loc['longitude']
     else:
         return None
-
-
-li_api_search = f"https://us1.locationiq.com/v1/search.php?key={config.LOCATIONIQ_KEY}&q=%s&format=json"
-li_api_reverse = f"https://us1.locationiq.com/v1/reverse.php?key={config.LOCATIONIQ_KEY}&lat=%s&lon=%s&zoom=14&format=json"
-owm_api_weather = f"https://api.openweathermap.org/data/2.5/weather?appid={config.OWM_KEY}&lat=%s&lon=%s&units=imperial"
-ip_api_url = f"http://api.ipstack.com/%s?access_key={config.IPSTACK_KEY}"
 
 
 def loc_from_placename(name):
@@ -84,12 +82,9 @@ def weather_for_loc(loc):
         return None
 
 
-# ensure the location is valid
-def ensure_valid_loc(loc):
-    """Ensures a location tuple is a 2 element tuple and has both latitude
-    and longitude.
-
-    If either is missing, then replace them both with the latitude and
+def set_loc_to_home_if_invalid(loc):
+    """If the location is not a 2 element tuple with both latitude
+    and longitude set, then return a tuple with the latitude and
     longitude of my house.
 
     """
@@ -121,28 +116,31 @@ def loc_from_request():
     can't be found by those means, it is set to my house in Westmont.
 
     """
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    placename = request.args.get('placename')
-    ip = request.remote_addr
     
     loc = None
+
+    args = request.form
+    lat = args.get('lat')
+    lon = args.get('lon')
     if lat is not None and lon is not None:
         loc = loc_from_strings(lat, lon)
 
-    if loc is None and placename is not None:
-        loc = loc_from_placename(placename)
-        if loc is None:
-            flash("'%s' cannot be located." % placename)
+    if loc is None:
+        placename = args.get('placename')
+        if placename is not None:
+            loc = loc_from_placename(placename)
+            if loc is None:
+                flash("'%s' cannot be located." % placename)
 
     if loc is None:
+        ip = request.remote_addr
         loc = loc_from_ip(ip)
         
-    loc = ensure_valid_loc(loc)
+    loc = set_loc_to_home_if_invalid(loc)
 
     return loc
 
-@app.route('/should_wear_a_hat')
+@app.route('/should_wear_a_hat', methods=['GET', 'POST'])
 def should_wear_a_hat():
 
     loc = loc_from_request()
@@ -150,18 +148,22 @@ def should_wear_a_hat():
 
     placename = None
     if weather is not None:
-        placename = None #weather['name']
+        placename = weather['name']
     if placename is None:
         placename = placename_from_loc(loc)
 
     feels_like = round(weather['main']['feels_like'])
     is_cold = is_it_cold(weather)
 
+    args = request.form
+    get_browser_pos = args.get('lat') is None and args.get('placename') is None
+
     return render_template('should_wear_a_hat.html',
                            placename = placename,
                            feels_like = feels_like,
                            is_cold = is_cold,
-                           weather = weather), 200
+                           weather = weather,
+                           get_browser_pos = get_browser_pos), 200
 
 @app.route('/')
 def root():
