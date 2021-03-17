@@ -86,12 +86,12 @@ def ensure_valid_loc(loc):
     longitude of my house.
 
     """
-    if loc is None or not isinstance(loc, tuple) or len(loc) != 2:
-        return  33.9383776, -118.3111258 # my house
+    if loc is not None:
+        if isinstance(loc, tuple) and len(loc) == 2:
+            if loc[0] is not None and loc[1] is not None:
+                return loc
 
-    return loc
-
-
+    return  33.9383776, -118.3111258 # my house
 
 def is_it_cold(weather):
     """Decides if it cold enough for a hat.
@@ -139,9 +139,13 @@ def loc_from_request():
 @app.route('/should_wear_a_hat')
 def should_wear_a_hat():
 
+    loc = loc_from_request()
     weather = weather_for_loc(loc)
-    placename = weather['name']
-    if not name:
+
+    placename = None
+    if weather is not None:
+        placename = weather['name']
+    if placename is None:
         placename = placename_from_loc(loc)
 
     feels_like = round(weather['main']['feels_like'])
@@ -149,8 +153,8 @@ def should_wear_a_hat():
 
     return render_template('should_wear_a_hat.html',
                            placename = placename,
-                           is_cold = is_cold,
                            feels_like = feels_like,
+                           is_cold = is_cold,
                            weather = weather), 200
 
 @app.route('/')
