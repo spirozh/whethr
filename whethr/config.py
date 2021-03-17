@@ -1,8 +1,7 @@
 import os
 from os.path import abspath, dirname
-from os import environ
 
-ENV = environ.get("ENV", "development")
+ENV = os.environ.get("ENV", "development")
 
 # Statement for enabling the development environment
 DEBUG = (ENV == "development")
