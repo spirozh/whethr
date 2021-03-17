@@ -22,10 +22,8 @@ def loc_from_ip(ip):
 # ensure the location is valid
 def ensure_valid_loc(loc):
     lat, lon = loc
-    if lat is None:
-        lat = 33.9383776
-    if lon is None:
-        lon = -118.3111258
+    if not lat or not lon:
+        lat, lon = 33.9383776, -118.3111258 # my house
 
     return (lat, lon)
 
@@ -38,36 +36,38 @@ def weather_for_loc(loc):
 
     return observation.weather
 
-# determine hat necessity given the weather
+
+# determine the necessity of a hat given the weather
 def a_hat_is_needed(weather):
     temp_feels_like = weather.temperature("fahrenheit")['feels_like']
     rain = weather.rain
-    snow = weather.snow
     
-    return (temp_feels_like < 60) or rain or snow
+    return (temp_feels_like < 60) or rain
 
 
-@app.route('/i_should_wear_a_hat')
-def i_should_wear_a_hat():
+@app.route('/should_wear_a_hat')
+def should_wear_a_hat():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
+    name = request.args.get('name')
     ip = request.remote_addr
 
-    loc = loc_from_query(lat, lon) if lat and lon else loc_from_ip(ip)
+    loc = loc_from_query(lat, lon) if lat and lon else \
+          loc_from_placename(name) if name else loc_from_ip(ip)
     loc = ensure_valid_loc(loc)
     
     weather = weather_for_loc(loc)
 
     should = "should" if a_hat_is_needed(weather) else "should not"
     
-    return render_template('i_should_wear_a_hat.html',
+    return render_template('should_wear_a_hat.html',
                            should=should, weather=weather), 200
 
 @app.route('/')
 def root():
-    return redirect('/i_should_wear_a_hat', code=302)
+    return redirect('/should_wear_a_hat', code=302)
 
 # 404 errror handling
 @app.errorhandler(404)
-def not_found(error):
+def not_found(_error):
     return render_template('404.html'), 404
