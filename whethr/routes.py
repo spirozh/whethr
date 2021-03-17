@@ -38,11 +38,11 @@ def weather_for_loc(loc):
 
 
 # determine the necessity of a hat given the weather
-def a_hat_is_needed(weather):
+def is_it_cold(weather):
     temp_feels_like = weather.temperature("fahrenheit")['feels_like']
     rain = weather.rain
     
-    return (temp_feels_like < 60) or rain
+    return temp_feels_like < 60
 
 
 @app.route('/should_wear_a_hat')
@@ -57,11 +57,11 @@ def should_wear_a_hat():
     loc = ensure_valid_loc(loc)
     
     weather = weather_for_loc(loc)
-
-    should = "should" if a_hat_is_needed(weather) else "should not"
+    feels_like = round(weather.temperature('fahrenheit')['feels_like'])
+    cold = is_it_cold(weather)
     
-    return render_template('should_wear_a_hat.html',
-                           should=should, weather=weather), 200
+    return render_template('should_wear_a_hat.html', cold=cold,
+                           feels_like=feels_like, weather=weather), 200
 
 @app.route('/')
 def root():

@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
-{% block header %}<h1>{% block title %}you {{ should }} wear a hat.{% endblock %}</h1>{% endblock %}
+{% block title %}you {{ "should" if cold or wet else "don't need to" }} wear a hat.{% endblock %}</h1>
 {% block content %}
-you {{ should }} wear a hat.
+you {{ "should" if (cold or wet) else "don't need to" }} wear a hat.
+<br>
+It feels like {{ feels_like }}&deg;F outside.
+{% if     cold %}chilly!{% endif %}
+{% if not cold %}warm!{% endif %}
 {% endblock %}
 
