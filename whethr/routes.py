@@ -36,8 +36,10 @@ def loc_from_ip(ip):
 li_api_urlbase = f"https://us1.locationiq.com/v1/%s.php?key={config.LOCATIONIQ_KEY}"
 
 li_api_search = f"{(li_api_urlbase % 'search')}&q=%s&format=json"
+
 def loc_from_placename(name):
     """Convert a placename to a tuple containing latitude and longitude.
+
     """
     response = requests.get(li_api_search % name)
     if response.status_code == 200:
@@ -46,8 +48,12 @@ def loc_from_placename(name):
     else:
         return None
 
-li_api_reverse = f"{(li_api_urlbase % 'reverse')}&lat=%s&lon=%s&format=json&zoom=14"
+li_api_reverse = f"{(li_api_urlbase % 'reverse')}&lat=%s&lon=%s&zoom=9&format=json"
+
 def placename_from_loc(loc):
+    """Convert a tuple containing latitude and longitude to a placename.
+
+    """
     lat, lon = loc
     response = requests.get(li_api_reverse % (lat, lon))
     
