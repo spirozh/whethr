@@ -9,7 +9,6 @@ DEBUG = (ENV == "development")
 
 # Define the application directory
 BASE_DIR = abspath(dirname(__file__))
-print("BASE_DIR: %s" % BASE_DIR)
 
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
