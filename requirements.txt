@@ -11,6 +11,7 @@ importlib-metadata==3.7.2
 ipstack==0.1.4
 itsdangerous==1.1.0
 Jinja2==2.11.3
+locationiq==0.0.2
 MarkupSafe==1.1.1
 pyowm==3.2.0
 PySocks==1.7.1

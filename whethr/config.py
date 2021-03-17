@@ -30,3 +30,4 @@ SECRET_KEY = "cookie_secret"
 # API keys
 OWM_KEY = "d5d1a49b1fdf3b6e04e1add6983ef4f7"
 IPSTACK_KEY = "e54b84d449bb5f90092b0f575dd41fad"
+LOCATIONIQ_KEY = "pk.ce1f8996f1bdbf6a99b21d1c611eb245"
