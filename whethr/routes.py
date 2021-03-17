@@ -2,18 +2,11 @@
 from flask import Flask, render_template, redirect, flash, request
 
 import requests, json
-
-from ipstack import GeoLookup
-
-from .exceptions import *
-
 from . import config
 
 # Define the WSGI application object
 app = Flask(__name__)
 app.config.from_object(config)
-
- 
 
 
 def loc_from_strings(lat, lon):
@@ -45,9 +38,6 @@ li_api_urlbase = f"https://us1.locationiq.com/v1/%s.php?key={config.LOCATIONIQ_K
 li_api_search = f"{(li_api_urlbase % 'search')}&q=%s&format=json"
 def loc_from_placename(name):
     """Convert a placename to a tuple containing latitude and longitude.
-
-    Raises an UnknownLocationError if a location cannot be found that
-    matches the name.
     """
     response = requests.get(li_api_search % name)
     if response.status_code == 200:
@@ -96,14 +86,10 @@ def ensure_valid_loc(loc):
     longitude of my house.
 
     """
-    lat, lon = False, False
-    if isinstance(loc, tuple) and len(loc) == 2:
-        lat, lon = loc
-    
-    if not lat or not lon:
-        lat, lon = 33.9383776, -118.3111258 # my house
+    if loc is None or not isinstance(loc, tuple) or len(loc) != 2:
+        return  33.9383776, -118.3111258 # my house
 
-    return lat, lon
+    return loc
 
 
 
@@ -118,38 +104,51 @@ def is_it_cold(weather):
     return temp_feels_like < 60
     
 
-@app.route('/should_wear_a_hat')
-def should_wear_a_hat():
+def loc_from_request():
+    """Get the location (a tuple of latitude and longitude) from the
+    values in the request.
+
+    there are three different ways to get the location, the lat and
+    lon query parameters, the name of a location, and the ip address
+    of the client.  They are tried in that order and if the location
+    can't be found by those means, it is set to my house in Westmont.
+
+    """
     lat = request.args.get('lat')
     lon = request.args.get('lon')
     name = request.args.get('name')
     ip = request.remote_addr
-
+    
     loc = None
-    if lat and lon:
+    if lat is not None and lon is not None:
         loc = loc_from_strings(lat, lon)
-    elif name:
-        try:
-            loc = loc_from_placename(name)
-        except UnknownLocationError:
+
+    if loc is None and name is not None:
+        loc = loc_from_placename(name)
+        if loc is None:
             msg = "'%s' cannot be located."
             flash(msg % name)
 
-    else:
+    if loc is None:
         loc = loc_from_ip(ip)
         
     loc = ensure_valid_loc(loc)
+
+    return loc
+
+@app.route('/should_wear_a_hat')
+def should_wear_a_hat():
+
     weather = weather_for_loc(loc)
-    name = weather['name']
+    placename = weather['name']
     if not name:
-        name = placename_from_loc(loc)
+        placename = placename_from_loc(loc)
 
     feels_like = round(weather['main']['feels_like'])
     is_cold = is_it_cold(weather)
 
-    
     return render_template('should_wear_a_hat.html',
-                           placename = name,
+                           placename = placename,
                            is_cold = is_cold,
                            feels_like = feels_like,
                            weather = weather), 200
@@ -158,7 +157,6 @@ def should_wear_a_hat():
 def root():
     return redirect('/should_wear_a_hat', code=302)
 
-# 404 errror handling
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html', error=error), 404

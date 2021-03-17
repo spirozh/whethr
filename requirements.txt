@@ -5,15 +5,11 @@ click==7.1.2
 distlib==0.3.1
 filelock==3.0.12
 Flask==1.1.2
-geojson==2.5.0
 idna==2.10
 importlib-metadata==3.7.2
-ipstack==0.1.4
 itsdangerous==1.1.0
 Jinja2==2.11.3
-locationiq==0.0.2
 MarkupSafe==1.1.1
-pyowm==3.2.0
 PySocks==1.7.1
 requests==2.25.1
 six==1.15.0
