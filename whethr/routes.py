@@ -17,7 +17,6 @@ def loc_from_strings(lat, lon):
     return float(lat), float(lon)
 
 
-ip_api_url = f"http://api.ipstack.com/%s?access_key={config.IPSTACK_KEY}"
 def loc_from_ip(ip):
     """Convert an IP address to a tuple containing latitude and
     longitude.
@@ -33,9 +32,11 @@ def loc_from_ip(ip):
         return None
 
 
-li_api_urlbase = f"https://us1.locationiq.com/v1/%s.php?key={config.LOCATIONIQ_KEY}"
+li_api_search = f"https://us1.locationiq.com/v1/search.php?key={config.LOCATIONIQ_KEY}&q=%s&format=json"
+li_api_reverse = f"https://us1.locationiq.com/v1/reverse.php?key={config.LOCATIONIQ_KEY}&lat=%s&lon=%s&zoom=14&format=json"
+owm_api_weather = f"https://api.openweathermap.org/data/2.5/weather?appid={config.OWM_KEY}&lat=%s&lon=%s&units=imperial"
+ip_api_url = f"http://api.ipstack.com/%s?access_key={config.IPSTACK_KEY}"
 
-li_api_search = f"{(li_api_urlbase % 'search')}&q=%s&format=json"
 
 def loc_from_placename(name):
     """Convert a placename to a tuple containing latitude and longitude.
@@ -48,7 +49,6 @@ def loc_from_placename(name):
     else:
         return None
 
-li_api_reverse = f"{(li_api_urlbase % 'reverse')}&lat=%s&lon=%s&zoom=9&format=json"
 
 def placename_from_loc(loc):
     """Convert a tuple containing latitude and longitude to a placename.
@@ -59,13 +59,14 @@ def placename_from_loc(loc):
     
     if response.status_code == 200:
         j = json.loads(response.content.decode('utf-8'))
-        return j['display_name']
+        if 'city' in j['address']:
+            return j['address']['city']
+        else:
+            return j['display_name']
     else:
         return None
  
 
-owm_api_urlbase = f"https://api.openweathermap.org/data/2.5/weather?appid={config.OWM_KEY}"
-owm_api_url = f"{owm_api_urlbase}&lat=%s&lon=%s&units=imperial"
 def weather_for_loc(loc):
     """Get the weather for a location (passed in as a 2-ple containing
     latitude and longitude.
@@ -74,7 +75,7 @@ def weather_for_loc(loc):
 
     """
     lat, lon = loc
-    response = requests.get(owm_api_url % (lat, lon))
+    response = requests.get(owm_api_weather % (lat, lon))
 
     if response.status_code == 200:
         j = json.loads(response.content.decode('utf-8'))
@@ -114,7 +115,7 @@ def loc_from_request():
     """Get the location (a tuple of latitude and longitude) from the
     values in the request.
 
-    there are three different ways to get the location, the lat and
+    There are three different ways to get the location, the lat and
     lon query parameters, the name of a location, and the ip address
     of the client.  They are tried in that order and if the location
     can't be found by those means, it is set to my house in Westmont.
@@ -122,18 +123,17 @@ def loc_from_request():
     """
     lat = request.args.get('lat')
     lon = request.args.get('lon')
-    name = request.args.get('name')
+    placename = request.args.get('placename')
     ip = request.remote_addr
     
     loc = None
     if lat is not None and lon is not None:
         loc = loc_from_strings(lat, lon)
 
-    if loc is None and name is not None:
-        loc = loc_from_placename(name)
+    if loc is None and placename is not None:
+        loc = loc_from_placename(placename)
         if loc is None:
-            msg = "'%s' cannot be located."
-            flash(msg % name)
+            flash("'%s' cannot be located." % placename)
 
     if loc is None:
         loc = loc_from_ip(ip)
@@ -150,7 +150,7 @@ def should_wear_a_hat():
 
     placename = None
     if weather is not None:
-        placename = weather['name']
+        placename = None #weather['name']
     if placename is None:
         placename = placename_from_loc(loc)
 

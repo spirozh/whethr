@@ -1,9 +1,14 @@
 {% extends "layout.html" %}
-{% block title %}you {{ "should" if is_cold else "don't need to" }} wear a hat, if you are in {{ placename }}.{% endblock %}</h1>
+{% block title %}you {{ "should" if is_cold else "don't need to" }} wear a hat, if you are near {{ placename }}.{% endblock %}</h1>
 {% block content %}
 If you are near {{ placename }}, you {{ "should" if is_cold else "don't need to" }} wear a hat.
 <br>
 It feels like {{ feels_like }}&deg;F outside.
 {{ "Chilly!" if is_cold else "Warm!" }}
+
+<form action="" method="get">
+  <input type="search" name="placename" placeholder="check somewhere else">
+</form>
+
 {% endblock %}
 
