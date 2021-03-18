@@ -37,13 +37,13 @@ flask
 - [X] user location
   user sets the 'placename' parameter on the page as city name, form
   resends the request with the specified location (html form)
-- [ ] browser location
+- [X] browser location
   if there was no 'placename' parameter and the browser will give the
   location, resend the request with the 'lat' and 'lon' parameters,
   requesting json instead of html and inserting the result into the
   DOM (javascript)
-  - [ ] get the location from the browser
-  - [ ] resend request
+  - [X] get the location from the browser
+  - [X] resend request
 - [ ] ? user subscribe
   subscribe to an email that tells you every day to wear a hat or
   not (html form)
@@ -66,17 +66,17 @@ flask
 - [X] hosting on digitalocean
 - [X] whethr.info domain
 - [X] whethr.info ssl cert
-** TODO get location [2/3]
+** TODO get location [3/3]
 - [X] check ip address first (set lat,lon)
-- [ ] user - enter the location (convert city to lat,lon)
+- [X] user - enter the location (convert city to lat,lon)
 - [X] browser - request location (as lat,lon)
 ** TODO read weather info for now
 - [X]  read weather
 ** TODO decide on a hat or not
 - [X] if it is <60F, wear a hat
-** TODO show it [1/4]
+** TODO show it [2/4]
 - [X] location form
-- [ ] client-side location
+- [X] client-side location
 - [ ] make it pretty
 - [ ] ? email subscription form
 ** TODO email [0/4]
