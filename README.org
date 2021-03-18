@@ -74,10 +74,10 @@ flask
 - [X]  read weather
 ** TODO decide on a hat or not
 - [X] if it is <60F, wear a hat
-** TODO show it [2/4]
+** TODO show it [3/4]
 - [X] location form
 - [X] client-side location
-- [ ] make it pretty
+- [X] make it pretty
 - [ ] ? email subscription form
 ** TODO email [0/4]
 - [ ] subscription database
