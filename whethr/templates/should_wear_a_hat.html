@@ -1,37 +1,47 @@
 {% extends "layout.html" %}
 {% block title %}you {{ "should" if is_cold else "don't need to" }} wear a hat, if you are near {{ placename }}.{% endblock %}
 {% block content %}
-If you are near {{ placename }}, you {{ "should" if is_cold else "don't need to" }} wear a hat.
-<br>
-It feels like {{ feels_like }}&deg;F outside.
-{{ "Chilly!" if is_cold else "Warm!" }}
 
-<form action="" method="post">
-  <input type="search" name="placename" placeholder="check somewhere else">
-</form>
+<div id="near">
+  If you are near {{ placename }}, you {{ "should" if is_cold else
+  "don't need to" }} wear a hat.
+</div>
+
+<div id="feels">
+  It feels like {{ feels_like }}&deg;F outside.  {{ "Chilly!" if
+is_cold else "Warm!" }}
+</div>
+
+<div id="form">
+  <form action="" method="post">
+    <input type="search" name="placename" placeholder="check somewhere else">
+  </form>
+</div>
 
 {% if get_browser_pos %}
-<script>
-  document._pos = "unknown";
-  function showPos(pos) {
-      eLat = document.getElementById("lat");
-      eLon = document.getElementById("lon");
-      eLat.value = pos.coords.latitude;
-      eLon.value = pos.coords.longitude;
+<div id=js>
+  <script>
+    document._pos = "unknown";
+    function showPos(pos) {
+	eLat = document.getElementById("lat");
+	eLon = document.getElementById("lon");
+	eLat.value = pos.coords.latitude;
+	eLon.value = pos.coords.longitude;
 
-      fLoc = document.getElementById("browser_loc_form");
-      fLoc.submit();
-  }
+	fLoc = document.getElementById("browser_loc_form");
+	fLoc.submit();
+    }
   
-  if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPos);
-  }
-</script>
+    if (navigator.geolocation) {
+	navigator.geolocation.getCurrentPosition(showPos);
+    }
+  </script>
 
-<form id="browser_loc_form" action="" method="post">
-  <input type="hidden" id="lat" name="lat">
-  <input type="hidden" id="lon" name="lon">
-</form>
+  <form id="browser_loc_form" action="" method="post">
+    <input type="hidden" id="lat" name="lat">
+    <input type="hidden" id="lon" name="lon">
+  </form>
+</div>
 {% endif %}
 
 {% endblock %}
