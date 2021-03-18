@@ -11,7 +11,7 @@ remote weather api:
 - OpenWeatherMap (www.openweathermap.org), use PyOWM
 
 something cool:
-1: tell the user whether they should wear a hat tomorrow
+1: tell the user whether they should wear a hat
 2: ? notify the user by email (or browser push?) if the recommendation changes 
 
 in order to get location from the browser, the site needs to have
