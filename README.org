@@ -28,7 +28,7 @@ flask
 ** / (root)
 - [X] the root path forwards to /i_should_wear_a_hat
 
-** /i_should_wear_a_hat
+** /should_wear_a_hat
 - [X] no 'lat' and 'lon' parameter
   use the location associated with the remote_addr from the request.
   if there is no location, use my house as the location (python)
@@ -39,11 +39,12 @@ flask
   resends the request with the specified location (html form)
 - [X] browser location
   if there was no 'placename' parameter and the browser will give the
-  location, resend the request with the 'lat' and 'lon' parameters,
-  requesting json instead of html and inserting the result into the
-  DOM (javascript)
+  location, resend the request with the 'lat' and 'lon' parameters (javascript)
   - [X] get the location from the browser
   - [X] resend request
+- [ ] AJAX
+  request json instead of html and insert the result into the DOM instead of
+  reloading (javascript)
 - [ ] ? user subscribe
   subscribe to an email that tells you every day to wear a hat or
   not (html form)
@@ -74,10 +75,11 @@ flask
 - [X]  read weather
 ** TODO decide on a hat or not
 - [X] if it is <60F, wear a hat
-** TODO show it [3/4]
+** TODO show it [3/5]
 - [X] location form
 - [X] client-side location
 - [X] make it pretty
+- [ ] AJAX from client-side
 - [ ] ? email subscription form
 ** TODO email [0/4]
 - [ ] subscription database
