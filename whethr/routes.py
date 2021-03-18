@@ -114,7 +114,7 @@ def loc_from_args(args):
         if placename is not None:
             loc = loc_from_placename(placename)
             if loc is None:
-                flash("'%s' cannot be located." % placename)
+                flash("The location '%s' couldn't be found. I'll use my house as the location instead." % placename)
 
     if loc is None:
         ip = request.remote_addr
