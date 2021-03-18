@@ -1,15 +1,19 @@
 <!doctype html>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{% block title %}{% endblock %} - Whethr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='hat-apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='hat-favicon-32x32.png') }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='hat-favicon-16x16.png') }}">
 <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
-<main class="content">
-  <h1>Whethr (you should wear a hat)</h1>
+<nav></nav>
+<section class="content">
+  <header>
+    <h1><nobr>Whethr <wbr>(you should wear a hat)</nobr></h1>
+  </header>
 
   {% for message in get_flashed_messages() %}
   <div class="flash">{{ message }}</div>
   {% endfor %}
   {% block content %}{% endblock %}
-</main>
+</section>
