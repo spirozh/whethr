@@ -26,7 +26,7 @@ flask
 * URL paths and functions
 
 ** / (root)
-- [X] the root path forwards to /i_should_wear_a_hat
+- [X] the root path forwards to /should_wear_a_hat
 
 ** /should_wear_a_hat
 - [X] no 'lat' and 'lon' parameter
